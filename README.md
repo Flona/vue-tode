@@ -10,4 +10,3 @@ npm install
 ```
 npm run dev
 ```
-开始开发项目
