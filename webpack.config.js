@@ -96,7 +96,7 @@ if (isDev) {
           'stylus-loader'
         ]
       })
-    },
+    }
   )
   config.plugins.push(
     new ExtractPlugin('styles.[contentHash:8].css'),
