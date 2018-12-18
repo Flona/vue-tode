@@ -4,6 +4,8 @@ const merge = require('webpack-merge')
 const path = require('path')
 const HTMLPlugin = require('html-webpack-plugin')
 const ExtractPlugin = require('extract-text-webpack-plugin')
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
+var MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -13,7 +15,8 @@ const defaultPlugins = [
         NODE_ENV: isDev ? '"development"' : '"production"'
       }
     }),
-    new HTMLPlugin()
+    new HTMLPlugin(),
+    new VueLoaderPlugin()
 ]
 
 const devServer = {
@@ -29,22 +32,60 @@ let config
 
 if (isDev) {
     config = merge(baseConfig, {
-        devtool: '#cheap-module-eval-source-map',
+        // devtool: '#cheap-module-eval-source-map',
         module: {
             rules: [
                 {
-                    test: /\.styl$/,
-                    use: [
-                        'vue-style-loader',
-                        'css-loader',
-                        {
+                    test: /\.styl(us)?$/,
+                    oneOf: [
+                      // 这里匹配 `<style module>`
+                      {
+                        resourceQuery: /module/,
+                        use: [
+                          'vue-style-loader',
+                          {
+                            loader: 'css-loader',
+                            options: {
+                              modules: true,
+                              localIdentName: '[path]-[name]-[hash:base64:5]',
+                              camelCase: true
+                            }
+                          },
+                          {
                             loader: 'postcss-loader',
                             options: {
                                 sourceMap: true
                             }
-                        },
-                        'stylus-loader'
+                          },
+                          'stylus-loader'
+                        ]
+                      },
+                      // 这里匹配普通的 `<style>` 或 `<style scoped>`
+                      {
+                        use: [
+                          'vue-style-loader',
+                          'css-loader',
+                          {
+                            loader: 'postcss-loader',
+                            options: {
+                                sourceMap: true
+                            }
+                          },
+                          'stylus-loader'
+                        ]
+                      }
                     ]
+                    // use: [
+                    //     'vue-style-loader',
+                    //     'css-loader',
+                    //     {
+                    //         loader: 'postcss-loader',
+                    //         options: {
+                    //             sourceMap: true
+                    //         }
+                    //     },
+                    //     'stylus-loader'
+                    // ]
                 }
             ]
         },
@@ -66,20 +107,56 @@ if (isDev) {
         module: {
             rules: [
                 {
-                    test: /\.styl$/,
-                    use: ExtractPlugin.extract({
-                        fallback: 'vue-style-loader',
+                    test: /\.styl(us)?$/,
+                    oneOf: [
+                      // 这里匹配 `<style module>`
+                      {
+                        resourceQuery: /module/,
                         use: [
-                            'css-loader',
-                            {
-                                loader: 'postcss-loader',
-                                options: {
-                                    sourceMap: true
-                                }
-                            },
-                            'stylus-loader'
+                          MiniCssExtractPlugin.loader,
+                          {
+                            loader: 'css-loader',
+                            options: {
+                              modules: true,
+                              localIdentName: '[hash:base64:8]',
+                              camelCase: true
+                            }
+                          },
+                          {
+                            loader: 'postcss-loader',
+                            options: {
+                                sourceMap: true
+                            }
+                          },
+                          'stylus-loader'
                         ]
-                    })
+                      },
+                      // 这里匹配普通的 `<style>` 或 `<style scoped>`
+                      {
+                        use: [
+                          MiniCssExtractPlugin.loader,
+                          'css-loader',
+                          {
+                            loader: 'postcss-loader',
+                            options: {
+                                sourceMap: true
+                            }
+                          },
+                          'stylus-loader'
+                        ]
+                      }
+                    ]
+                    // use: [
+                    //   MiniCssExtractPlugin.loader,
+                    //   'css-loader',
+                    //   {
+                    //     loader: 'postcss-loader',
+                    //     options: {
+                    //       sourceMap: true
+                    //     }
+                    //   },
+                    //   'stylus-loader'
+                    // ]
                 }
             ]
         },
@@ -90,7 +167,10 @@ if (isDev) {
             runtimeChunk: true
         },
         plugins: defaultPlugins.concat([
-            new ExtractPlugin('styles.[chunkhash:8].css')
+          new MiniCssExtractPlugin({
+            filename: 'styles.[chunkhash:8].css'
+          })
+            // new ExtractPlugin('styles.[chunkhash:8].css')
             // new webpack.optimize.CommonsChunkPlugin({
             //   name: 'vendor'
             // }),
