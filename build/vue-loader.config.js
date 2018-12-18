@@ -1,5 +1,8 @@
 module.exports = (isDev) => {
     return {
+        compilerOptons:{
+          preserveWhitespace: true
+        }
         // preserveWhitepace: true,
         // extractCSS: !isDev,
         // cssModules: {
