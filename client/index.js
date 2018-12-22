@@ -13,6 +13,32 @@ Vue.use(Vuex)
 const router = createRouter()
 const store = createStore()
 
+store.registerModule('c', {
+  state: {
+    text: 3
+  }
+})
+
+// store.unregisterModule('c')
+
+// store.watch((state) => state.count + 1, (newValue) => {
+//   console.log('subscribe: ', newValue)
+// })
+
+// state是全部的state,包括module中的
+// store.subscribe((mutation, state) => {
+//   console.log(state)
+//   console.log(mutation.type)
+//   console.log(mutation.payload)
+// })
+
+// state是全部的state,包括module中的
+store.subscribeAction((action, state) => {
+  console.log(state)
+  console.log(action.type)
+  console.log(action.payload)
+})
+
 router.beforeEach((to, from, next) => {
   console.log('before each invoked')
   // 校验（登录等）

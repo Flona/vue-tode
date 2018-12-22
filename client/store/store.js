@@ -7,11 +7,71 @@ import actions from './actions/actions'
 
 const isDev = process.env.NODE_ENV === 'development'
 export default () => {
-  return new Vuex.Store({
+  const store = new Vuex.Store({
     strict: isDev,
     state: defaultState,
     mutations,
     getters,
-    actions
+    actions,
+    modules: {
+      a: {
+        namespaced: true,
+        state: {
+          text: 1
+        },
+        // 默认下mutations是全局的。除非配置namespaced
+        mutations: {
+          updateA (state, num) {
+            console.log('a state', state)
+            state.text = num
+          }
+        },
+        getters: {
+          textPlus (state, getters, rootState) {
+            console.log('a:getters', getters)
+            return state.text + 1
+            // return state.text + rootState.count
+          }
+        },
+        actions: {
+          updateAAsync ({state, commit, rootState}, data) {
+            // setTimeout(() => {
+            //   commit('updateA', num)
+            // }, 3000)
+            setTimeout(() => {
+              commit('updateCount', data.num, {root: true})
+            }, data.time)
+          }
+        }
+      },
+      b: {
+        state: {
+          text: 2
+        }
+      }
+    }
   })
+
+  if (module.hot) {
+    module.hot.accept([
+      './state/state',
+      './mutations/mutations',
+      './actions/actions',
+      './getters/getters'
+    ], () => {
+      const newState = require('./state/state').default
+      const newMutations = require('./mutations/mutations').default
+      const newActions = require('./actions/actions').default
+      const newGetters = require('./getters/getters').default
+
+      store.hotUpdate({
+        state: newState,
+        mutations: newMutations,
+        getters: newGetters,
+        actions: newActions
+      })
+    })
+  }
+
+  return store
 }

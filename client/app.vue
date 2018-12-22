@@ -3,6 +3,7 @@
     <div id="cover"></div>
     <Header></Header>
     <p>{{counter}} {{fullName}}</p>
+    <p>module: {{a}} {{b}} {{c}} textPlus: {{textPlus}}</p>
     <!-- <todo></todo> -->
     <router-link to="/app/123">app123</router-link>
     <router-link to="/app/456">app456</router-link>
@@ -48,14 +49,33 @@ export default {
     //   num: 6,
     //   time: 2000
     // })
+
+    // this.$store.commit('updateA', 3)
+    // this['updateA'](4)
+    this['a/updateA'](5)
+
+    console.log('a/textPlus: ', this['a/textPlus'])
+    this['a/updateAAsync']({num: 10, time: 4000})
   },
   computed: {
+    // a () {
+    //   return this.$store.state.a.text
+    // },
+    b () {
+      return this.$store.state.b.text
+    },
     ...mapState({
-      counter: 'count'
+      counter: 'count',
       // counter: (state) => state.count
+      a: (state) => state.a.text,
+      c: (state) => state.c.text
     }),
     // ...mapState(['count']),
-    ...mapGetters(['fullName'])
+    // ...mapGetters(['fullName', 'a/textPlus'])
+    ...mapGetters({
+      'fullName': 'fullName',
+      textPlus: 'a/textPlus'
+    })
     // count () {
     //   return this.$store.state.count
     // },
@@ -64,8 +84,9 @@ export default {
     // }
   },
   methods: {
-    ...mapActions(['updateCountAsync']),
-    ...mapMutations(['updateCount'])
+    ...mapActions(['updateCountAsync', 'a/updateAAsync']),
+    // ...mapMutations(['updateCount', 'updateA'])
+    ...mapMutations(['updateCount', 'a/updateA'])
   }
 }
 </script>
