@@ -2,21 +2,28 @@
   <div id="app">
     <div id="cover"></div>
     <Header></Header>
-    <todo></todo>
+    <!-- <todo></todo> -->
+    <router-link to="/app/123">app123</router-link>
+    <router-link to="/app/456">app456</router-link>
+    <router-link :to="{name: 'login'}">login</router-link>
+    <!-- <router-link to="/login/active">login-active</router-link> -->
+    <router-view></router-view>
     <Footer></Footer>
+    <!-- 署名 -->
+    <!-- <router-view name="test"></router-view> -->
   </div>
 </template>
 
 <script>
 import Header from './layout/header.vue'
 import Footer from './layout/footer.jsx'
-import Todo from './views/todo/todo.vue'
+// import Todo from './views/todo/todo.vue'
 
 export default {
   components: {
     Header,
-    Footer,
-    Todo
+    Footer
+    // Todo
   }
 }
 </script>

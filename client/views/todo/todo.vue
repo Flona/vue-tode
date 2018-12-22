@@ -33,6 +33,7 @@ export default {
       filter: 'all'
     }
   },
+  props: ['id'],
   components: {
     Item,
     Tabs
@@ -45,6 +46,30 @@ export default {
       const completed = this.filter === 'completed'
       return this.todos.filter(todo => completed === todo.completed)
     }
+  },
+  mounted () {
+    console.log(this.id)
+    console.log(this.$route.params)
+    console.log(this.$route.query)
+    console.log(this.$route.meta)
+  },
+  beforeRouteEnter (to, from, next) {
+    console.log('todo before enter', this)
+    // 拿到当前this=vm，可做数据获取塞进去
+    next(vm => {
+      console.log(vm)
+    })
+  },
+  beforeRouteUpdate (to, from, next) {
+    // todo/:id切换，组件仅是更新，可拿数据重新获取，mounted是不会再次执行的，routes中beforeEnter不调用
+    // watch方式比较麻烦，性能开销
+    console.log('todo before update', this)
+    next()
+  },
+  beforeRouteLeave (to, from, next) {
+    console.log('todo before leave', this)
+    // 离开前问题询问
+    next()
   },
   methods: {
     addTodo (e) {
